@@ -87,6 +87,10 @@ class Parser_21:
             price_product = ''
         return name_product.text, price_product
 
+#TODO Нужно достать артикул и поиск по vdom.by
+
+
+
 def main():
     p21 = Parser_21()
 
