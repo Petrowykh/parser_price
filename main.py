@@ -3,6 +3,7 @@
 
 import bs4
 import requests
+import csv
 
 
 list_url_temp = {
@@ -60,9 +61,9 @@ class ParserVdom:
             if article == soup.find("table", class_="shop_attributes").find("td").text:
                 price_vdom = int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])
             else:
-                price_vdom = "N/D"
+                price_vdom = ''
         except:
-            price_vdom = "N/D"
+            price_vdom = ''
         return price_vdom
 
 class Parser_21:
@@ -130,31 +131,44 @@ class Parser_21:
             #price = price_product.find("span")
         except:
             price_product = ''
+
+        if price_product != '':
+            price_product = float(price_product.replace(',', '.'))
         return name_product.text, price_product, self.get_article(name_product.text)
 
 def main():
     p21 = Parser_21()
     vdom = ParserVdom()
 
+    my_list = []
+
     for url in list_url_temp:
         cont = p21.get_blocks(p21.get_page(url))
         for i in cont:
             #print ('article vdom: ', p21.parse_block(i)[2])
+            short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+                     p21.parse_block(i)[1],vdom.price_vdom(p21.parse_block(i)[2]))]
+            my_list.append(short)
 
-            print(p21.parse_block(i))
-            print (vdom.price_vdom(p21.parse_block(i)[2]))
         fp = p21.get_final_page(url)
         if fp > 0:
             for page in range(1, fp):
                 print ('Page: ', page+1)
                 url_count = url + 'page:' + str(page+1)
-                print (url_count)
                 cont = p21.get_blocks(p21.get_page(url_count))
                 for i in cont:
-                    print (p21.parse_block(i))
-                    print(vdom.price_vdom(p21.parse_block(i)[2]))
+                    short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+                            p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+                    my_list.append(short)
+
+    return my_list
 
 if __name__ == '__main__':
-    main()
+    list = main()
+    with open('out.csv', "w", newline='') as csv_file:
+        writer = csv.writer(csv_file, delimiter=';')
+        for line in list:
+            print (line[0])
+            writer.writerow(line[0])
 
 
