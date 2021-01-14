@@ -71,6 +71,18 @@ class Parser_21:
         container = soup.select('li.result__item')
         return container
 
+    def get_article (self, name):
+        #TODO функция на справляется со строкой "в ассортимеенте", исправть
+        str = name.split(' ')
+        if ')' in str[-1]:
+            if '(' in str[-2]:
+                return str[-3]
+            else:
+                return str[-2]
+        else:
+            return str[-1]
+
+
     def parse_block(self, item):
         try:
             # имени может не быть
@@ -85,12 +97,12 @@ class Parser_21:
             #price = price_product.find("span")
         except:
             price_product = ''
-        return name_product.text, price_product
+        return name_product.text, self.get_article(name_product.text), price_product
 
 def main():
     p21 = Parser_21()
 
-    for url in list_url:
+    for url in list_url_temp:
         cont = p21.get_blocks(p21.get_page(url))
         for i in cont:
             print(p21.parse_block(i))
