@@ -35,7 +35,42 @@ list_url = {
     'https://www.21vek.by/furnishings/all/belbohemia/',
     'https://www.21vek.by/interior_watches/all/belbohemia/',
     'https://www.21vek.by/thermoses/all/belbohemia/',  
-    'https://www.21vek.by/bags_refrigerators/all/belbohemia/'
+    'https://www.21vek.by/bags_refrigerators/all/belbohemia/',
+    'https://www.21vek.by/cezves/all/belbohemia/',
+    'https://www.21vek.by/coffee_teapots/all/belbohemia/',
+    'https://www.21vek.by/bathroom_furniture/all/belbohemia/',
+    'https://www.21vek.by/bathroom_apps/all/belbohemia/',
+    'https://www.21vek.by/storage_organizers/all/belbohemia/',
+    'https://www.21vek.by/bins/all/belbohemia/',
+    'https://www.21vek.by/cleaning_implements/all/belbohemia/',
+    'https://www.21vek.by/drying_racks/all/belbohemia/',
+    'https://www.21vek.by/towels/all/belbohemia/',
+    'https://www.21vek.by/washing_tools/all/belbohemia/',
+    'https://www.21vek.by/makeup_storage/all/belbohemia/',
+    'https://www.21vek.by/vacuum_packing/all/belbohemia/',
+    'https://www.21vek.by/clothes_hangers/all/belbohemia/',
+    'https://www.21vek.by/face_apps/all/belbohemia/',
+    'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
+    'https://www.21vek.by/toilet_accessories/all/belbohemia/',
+    'https://www.21vek.by/bathroom_sets/all/belbohemia/',
+    'https://www.21vek.by/aprons_potholders/all/belbohemia/',
+    'https://www.21vek.by/watering/all/belbohemia/',
+    'https://www.21vek.by/gift_sets/all/belbohemia/',
+    'https://www.21vek.by/cutting_boards/all/belbohemia/',
+    'https://www.21vek.by/kitchen_apps/all/belbohemia/',
+    'https://www.21vek.by/bowls_feeders/all/belbohemia/',
+    'https://www.21vek.by/animal_furniture/all/belbohemia/',
+    'https://www.21vek.by/cat_scratchers/all/belbohemia/',
+    'https://www.21vek.by/aerobics_yoga/all/belbohemia/',
+    'https://www.21vek.by/sport_expanders/all/belbohemia/',
+    'https://www.21vek.by/weights/all/belbohemia/',
+    'https://www.21vek.by/hair_accessories/all/belbohemia/',
+    'https://www.21vek.by/hair_colors/all/belbohemia/',
+    'https://www.21vek.by/massagers/all/belbohemia/',
+    'https://www.21vek.by/sports_bottles/all/belbohemia/',
+    'https://www.21vek.by/frying_pans/all/belbohemia/',
+    'https://www.21vek.by/parasols/all/belbohemia/'
+
 }
 
 
@@ -59,7 +94,7 @@ class ParserVdom:
         try:
             r = soup.find("p", class_ = "price").find("span").text
             if article == soup.find("table", class_="shop_attributes").find("td").text:
-                price_vdom = int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])
+                price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
             else:
                 price_vdom = ''
         except:
@@ -132,8 +167,7 @@ class Parser_21:
         except:
             price_product = ''
 
-        if price_product != '':
-            price_product = float(price_product.replace(',', '.'))
+
         return name_product.text, price_product, self.get_article(name_product.text)
 
 def main():
@@ -142,13 +176,15 @@ def main():
 
     my_list = []
 
-    for url in list_url_temp:
+    for url in list_url:
+        print (url)
         cont = p21.get_blocks(p21.get_page(url))
         for i in cont:
+            if p21.parse_block(i)[1] != '':
             #print ('article vdom: ', p21.parse_block(i)[2])
-            short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
-                     p21.parse_block(i)[1],vdom.price_vdom(p21.parse_block(i)[2]))]
-            my_list.append(short)
+                short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+                        p21.parse_block(i)[1],vdom.price_vdom(p21.parse_block(i)[2]))]
+                my_list.append(short)
 
         fp = p21.get_final_page(url)
         if fp > 0:
@@ -157,9 +193,10 @@ def main():
                 url_count = url + 'page:' + str(page+1)
                 cont = p21.get_blocks(p21.get_page(url_count))
                 for i in cont:
-                    short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
-                            p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                    my_list.append(short)
+                    if p21.parse_block(i)[1] != '':
+                        short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+                                p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+                        my_list.append(short)
 
     return my_list
 
@@ -168,7 +205,6 @@ if __name__ == '__main__':
     with open('out.csv', "w", newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
         for line in list:
-            print (line[0])
             writer.writerow(line[0])
 
 
