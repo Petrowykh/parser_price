@@ -6,9 +6,10 @@ import requests
 
 
 list_url_temp = {
-    'https://www.21vek.by/ny_decorations/all/belbohemia/',
-
+    'https://www.21vek.by/jewelry_boxes/all/belbohemia/',
 }
+
+url_vdom_search = 'https://vdom.by/?post_type=product&s='
 
 list_url = {
     'https://www.21vek.by/ny_decorations/all/belbohemia/',
@@ -37,8 +38,36 @@ list_url = {
 }
 
 
+class ParserVdom:
+    def __init__(self):
+        # init parser
+        self.session = requests.Session()
+        self.session.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)\
+            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+
+    def get_page(self, page_url):
+        # text of page
+        r = self.session.get(page_url)
+        r.encoding = 'utf-8'
+        return r.text
+
+    def price_vdom (self, article):
+        vdom_text = url_vdom_search+article
+        soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
+        try:
+            r = soup.find("p", class_ = "price").find("span").text
+            if article == soup.find("table", class_="shop_attributes").find("td").text:
+                price_vdom = int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])
+            else:
+                price_vdom = "N/D"
+        except:
+            price_vdom = "N/D"
+        return price_vdom
+
 class Parser_21:
     def __init__(self):
+        # init parser
         self.session = requests.Session()
         self.session.headers = {
             'User - Agent': 'Mozilla 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit \
@@ -47,11 +76,13 @@ class Parser_21:
         }
 
     def get_page(self, page_url):
+        # text of page
         r = self.session.get(page_url)
         r.encoding = 'utf-8'
         return r.text
 
     def get_final_page (self, page_url):
+        # definition number of final page
         soup = bs4.BeautifulSoup(self.get_page(page_url), 'lxml')
         try:
             final_page_soup = soup.find("div", class_ ="cr-paginator_page_list").text
@@ -67,11 +98,13 @@ class Parser_21:
 
 
     def get_blocks(self, html):
+        # blocks with products
         soup = bs4.BeautifulSoup(html, 'lxml')
         container = soup.select('li.result__item')
         return container
 
     def get_article (self, name):
+        # article for vdom.by
         #TODO функция на справляется со строкой "в ассортимеенте", исправть
         str = name.split(' ')
         if ')' in str[-1]:
@@ -82,8 +115,8 @@ class Parser_21:
         else:
             return str[-1]
 
-
     def parse_block(self, item):
+        # definition name and price 21vek.by
         try:
             # имени может не быть
             name_product = item.find("span", class_ = 'result__name')
@@ -97,15 +130,19 @@ class Parser_21:
             #price = price_product.find("span")
         except:
             price_product = ''
-        return name_product.text, self.get_article(name_product.text), price_product
+        return name_product.text, price_product, self.get_article(name_product.text)
 
 def main():
     p21 = Parser_21()
+    vdom = ParserVdom()
 
     for url in list_url_temp:
         cont = p21.get_blocks(p21.get_page(url))
         for i in cont:
+            #print ('article vdom: ', p21.parse_block(i)[2])
+
             print(p21.parse_block(i))
+            print (vdom.price_vdom(p21.parse_block(i)[2]))
         fp = p21.get_final_page(url)
         if fp > 0:
             for page in range(1, fp):
@@ -115,6 +152,7 @@ def main():
                 cont = p21.get_blocks(p21.get_page(url_count))
                 for i in cont:
                     print (p21.parse_block(i))
+                    print(vdom.price_vdom(p21.parse_block(i)[2]))
 
 if __name__ == '__main__':
     main()
