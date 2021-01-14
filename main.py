@@ -7,7 +7,7 @@ import csv
 
 
 list_url_temp = {
-    'https://www.21vek.by/jewelry_boxes/all/belbohemia/',
+    'https://www.21vek.by/ny_decorations/all/belbohemia/',
 }
 
 url_vdom_search = 'https://vdom.by/?post_type=product&s='
@@ -47,7 +47,7 @@ list_url = {
     'https://www.21vek.by/towels/all/belbohemia/',
     'https://www.21vek.by/washing_tools/all/belbohemia/',
     'https://www.21vek.by/makeup_storage/all/belbohemia/',
-    'https://www.21vek.by/vacuum_packing/all/belbohemia/',
+    #'https://www.21vek.by/vacuum_packing/all/belbohemia/',
     'https://www.21vek.by/clothes_hangers/all/belbohemia/',
     'https://www.21vek.by/face_apps/all/belbohemia/',
     'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
@@ -86,6 +86,7 @@ class ParserVdom:
         # text of page
         r = self.session.get(page_url)
         r.encoding = 'utf-8'
+
         return r.text
 
     def price_vdom (self, article):
@@ -105,16 +106,14 @@ class Parser_21:
     def __init__(self):
         # init parser
         self.session = requests.Session()
-        self.session.headers = {
-            'User - Agent': 'Mozilla 5.0 (Windows NT 10.0; Win64; x64) AppleWebKit \
-            537.36(KHTML, like Gecko) Chrome / 78.0.3904.108 Safari / 537.36',
-            'Accept-Language': 'ru',
-        }
+        self.session.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)\
+            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
     def get_page(self, page_url):
         # text of page
         r = self.session.get(page_url)
         r.encoding = 'utf-8'
+        print (r.status_code)
         return r.text
 
     def get_final_page (self, page_url):
@@ -143,13 +142,14 @@ class Parser_21:
         # article for vdom.by
         #TODO функция на справляется со строкой "в ассортимеенте", исправть
         str = name.split(' ')
-        if ')' in str[-1]:
-            if '(' in str[-2]:
-                return str[-3]
-            else:
-                return str[-2]
-        else:
-            return str[-1]
+        #print (str)
+        result = ''
+        for i in str:
+            if len(i) == 5 and i.isnumeric():
+                result = i
+
+        return result
+
 
     def parse_block(self, item):
         # definition name and price 21vek.by
@@ -166,8 +166,6 @@ class Parser_21:
             #price = price_product.find("span")
         except:
             price_product = ''
-
-
         return name_product.text, price_product, self.get_article(name_product.text)
 
 def main():
@@ -177,27 +175,16 @@ def main():
     my_list = []
 
     for url in list_url:
-        print (url)
-        cont = p21.get_blocks(p21.get_page(url))
-        for i in cont:
-            if p21.parse_block(i)[1] != '':
-            #print ('article vdom: ', p21.parse_block(i)[2])
-                short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
-                        p21.parse_block(i)[1],vdom.price_vdom(p21.parse_block(i)[2]))]
-                my_list.append(short)
-
-        fp = p21.get_final_page(url)
-        if fp > 0:
-            for page in range(1, fp):
-                print ('Page: ', page+1)
-                url_count = url + 'page:' + str(page+1)
-                cont = p21.get_blocks(p21.get_page(url_count))
-                for i in cont:
-                    if p21.parse_block(i)[1] != '':
-                        short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
-                                p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                        my_list.append(short)
-
+        fp = p21.get_final_page(url) # define pages
+        for page in range(0, fp):
+            url_count = url + 'page:' + str(page+1) # format url
+            print (url_count)
+            cont = p21.get_blocks(p21.get_page(url_count))
+            for i in cont:
+                if p21.parse_block(i)[1] != '':
+                    short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+                             p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+                    my_list.append(short)
     return my_list
 
 if __name__ == '__main__':
