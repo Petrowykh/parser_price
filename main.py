@@ -145,7 +145,7 @@ class ParserVdom(Parser):
             else:
                 price_vdom = ''
         except Exception as E:
-            logging.exception(E)
+            # logging.exception(E)
             price_vdom = ''
         return price_vdom
 
@@ -214,7 +214,8 @@ def main():
 
                 short = [(parse_product_temp[2], parse_product_temp[0],
                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-                print(short)
+                if short[0][3] != '':
+                    print(page, short)
                 my_list.append(short)
 
     # p21 = Parser21Vek()
