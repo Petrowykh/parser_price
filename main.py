@@ -89,6 +89,7 @@ class Parser:
 
     def get_page(self, page_url):
         # text of page
+        # print('GET')
         try:
             r = self.session.get(page_url)
             r.encoding = 'utf-8'
@@ -209,14 +210,15 @@ def main():
 
     fp = pOz.get_final_page()  # define pages
     for page in range(0, fp):
-        url_count = url_oz_main + 'page%3A2=&page=' + str(page+1)  # format url
+        url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
         print(url_count)
         links = pOz.get_links(pOz.get_page(url_count))
         for i in links:
-            if pOz.parse_product(i)[1] != '' and pOz.parse_product(i)[2] != '':
+            parse_product_temp = pOz.parse_product(i)
+            if parse_product_temp[1] != '' and parse_product_temp[2] != '':
 
-                short = [(pOz.parse_product(i)[2], pOz.parse_product(i)[0],
-                        pOz.parse_product(i)[1], vdom.price_vdom(pOz.parse_product(i)[2]))]
+                short = [(parse_product_temp[2], parse_product_temp[0],
+                        parse_product_temp[1], vdom.price_vdom(pOz.parse_product(i)[2]))]
                 print (short)
                 my_list.append(short)
 
