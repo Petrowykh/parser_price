@@ -14,9 +14,11 @@ list_url_temp = {  # for testing
     'https://www.21vek.by/ny_decorations/all/belbohemia/',
 }
 
-url_vdom_search = 'https://vdom.by/?post_type=product&s='
+url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search in vdom.by
 
-list_url = {
+url_oz_main = 'https://oz.by/producer/more120300.html'
+
+list_url_21vek = {
     'https://www.21vek.by/ny_decorations/all/belbohemia/',
     'https://www.21vek.by/led_decorations/all/belbohemia/',
     'https://www.21vek.by/christmas_led_figures/all/belbohemia/',
@@ -97,6 +99,39 @@ class Parser:
         return html_page
 
 
+class ParserOz(Parser):
+
+    def get_final_page(self):
+        soup = bs4.BeautifulSoup(self.get_page(url_oz_main), 'lxml')
+        r = soup.find("li", class_="g-pagination__list__li pg-link pg-last").find("a").text
+        final_page = int(r)
+        return final_page
+
+    def get_links(self, html):
+        links=[]
+        soup = bs4.BeautifulSoup(html, 'lxml')
+        container = soup.find_all("div", class_="item-type-card__content")
+        for cont in container:
+            links.append(cont.find("a").get("href"))
+        return links
+
+    def parse_product(self, link):
+        cod_link = self.get_page("https://oz.by" + link)
+        soup = bs4.BeautifulSoup(cod_link, 'lxml')
+        name = soup.find("div", class_="b-product-title__heading").find("h1").text
+        price = soup.find("div", class_="b-product-control__row").find("span").text.strip().split("\xa0")[0]
+        articles = soup.find("div", class_="b-description__container-col").find_all("td")
+        i = 0
+        for article in articles:
+            i = i+1
+            if article.text == 'Артикул':
+                sa = articles[i].text
+                break
+            else:
+                sa = ''
+
+        return name, price, sa
+
 class ParserVdom(Parser):
 
     def price_vdom(self, article):
@@ -163,22 +198,45 @@ class Parser21Vek(Parser):
 
 
 def main():
-    p21 = Parser21Vek()
+    pOz = ParserOz()
     vdom = ParserVdom()
+    my_list = []
+
+    #print(pOz.get_final_page())
+
 
     my_list = []
 
-    for url in list_url_temp:
-        fp = p21.get_final_page(url)  # define pages
-        for page in range(0, fp):
-            url_count = url + 'page:' + str(page+1)  # format url
-            print(url_count)
-            cont = p21.get_blocks(p21.get_page(url_count))
-            for i in cont:
-                if p21.parse_block(i)[1] != '':
-                    short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
-                             p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                    my_list.append(short)
+    fp = pOz.get_final_page()  # define pages
+    for page in range(0, fp):
+        url_count = url_oz_main + 'page%3A2=&page=' + str(page+1)  # format url
+        print(url_count)
+        links = pOz.get_links(pOz.get_page(url_count))
+        for i in links:
+            if pOz.parse_product(i)[1] != '' and pOz.parse_product(i)[2] != '':
+
+                short = [(pOz.parse_product(i)[2], pOz.parse_product(i)[0],
+                        pOz.parse_product(i)[1], vdom.price_vdom(pOz.parse_product(i)[2]))]
+                print (short)
+                my_list.append(short)
+
+
+    # p21 = Parser21Vek()
+    # vdom = ParserVdom()
+    #
+    # my_list = []
+    #
+    # for url in list_url_temp:
+    #     fp = p21.get_final_page(url)  # define pages
+    #     for page in range(0, fp):
+    #         url_count = url + 'page:' + str(page+1)  # format url
+    #         print(url_count)
+    #         cont = p21.get_blocks(p21.get_page(url_count))
+    #         for i in cont:
+    #             if p21.parse_block(i)[1] != '':
+    #                 short = [(p21.parse_block(i)[2], p21.parse_block(i)[0],
+    #                          p21.parse_block(i)[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+    #                 my_list.append(short)
     return my_list
 
 
