@@ -1,5 +1,5 @@
 
-# version 1.0
+# version 1.2
 
 import bs4
 import requests
@@ -7,10 +7,10 @@ import csv
 import logging
 
 
-logging.basicConfig(filename="parse.log", level=logging.INFO)
+logging.basicConfig(filename="parse.log", level=logging.INFO, filemode="w")
 
 
-list_url_temp = {
+list_url_temp = {  # for testing
     'https://www.21vek.by/ny_decorations/all/belbohemia/',
 }
 
@@ -74,39 +74,11 @@ list_url = {
     'https://www.21vek.by/sports_bottles/all/belbohemia/',
     'https://www.21vek.by/frying_pans/all/belbohemia/',
     'https://www.21vek.by/parasols/all/belbohemia/'
-
 }
 
 
-class ParserVdom:
-    def __init__(self):
-        # init parser
-        self.session = requests.Session()
-        self.session.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)\
-            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+class Parser:
 
-    def get_page(self, page_url):
-        # text of page
-        r = self.session.get(page_url)
-        r.encoding = 'utf-8'
-        return r.text
-
-    def price_vdom(self, article):
-        vdom_text = url_vdom_search+article
-        soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
-        try:
-            r = soup.find("p", class_="price").find("span").text
-            if article == soup.find("table", class_="shop_attributes").find("td").text:
-                price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
-            else:
-                price_vdom = ''
-        except Exception as E:
-            logging.exception(E)
-            price_vdom = ''
-        return price_vdom
-
-
-class Parser21Vek:
     def __init__(self):
         # init parser
         self.session = requests.Session()
@@ -124,6 +96,26 @@ class Parser21Vek:
             logging.exception(E)
         return html_page
 
+
+class ParserVdom(Parser):
+
+    def price_vdom(self, article):
+        vdom_text = url_vdom_search+article
+        soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
+        try:
+            r = soup.find("p", class_="price").find("span").text
+            if article == soup.find("table", class_="shop_attributes").find("td").text:
+                price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
+            else:
+                price_vdom = ''
+        except Exception as E:
+            logging.exception(E)
+            price_vdom = ''
+        return price_vdom
+
+
+class Parser21Vek(Parser):
+
     def get_final_page(self, page_url):
         # definition number of final page
         soup = bs4.BeautifulSoup(self.get_page(page_url), 'lxml')
@@ -136,13 +128,15 @@ class Parser21Vek:
             final_page = 0
         return final_page
 
-    def get_blocks(self, html):
+    @staticmethod
+    def get_blocks(html):
         # blocks with products
         soup = bs4.BeautifulSoup(html, 'lxml')
         container = soup.select('li.result__item')
         return container
 
-    def get_article(self, name):
+    @staticmethod
+    def get_article(name):
         # article for vdom.by
         str_article = name.split(' ')
         result = ''
@@ -154,13 +148,13 @@ class Parser21Vek:
     def parse_block(self, item):
         # definition name and price 21vek.by
         try:
-            # имени может не быть
+            # name is found
             name_product = item.find("span", class_="result__name")
         except Exception as E:
             logging.exception(E)
             name_product = ''
         try:
-            # цены может не быть
+            # price is found
             price_product = item.find('span', class_="g-price__unit result__priceunit").find_previous("span").text
         except Exception as E:
             logging.exception(E)
@@ -174,7 +168,7 @@ def main():
 
     my_list = []
 
-    for url in list_url:
+    for url in list_url_temp:
         fp = p21.get_final_page(url)  # define pages
         for page in range(0, fp):
             url_count = url + 'page:' + str(page+1)  # format url
