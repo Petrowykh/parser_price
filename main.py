@@ -108,8 +108,9 @@ class ParserOz(Parser):
         final_page = int(r)
         return final_page
 
-    def get_links(self, html):
-        links=[]
+    @staticmethod
+    def get_links(html):
+        links = []
         soup = bs4.BeautifulSoup(html, 'lxml')
         container = soup.find_all("div", class_="item-type-card__content")
         for cont in container:
@@ -123,15 +124,14 @@ class ParserOz(Parser):
         price = soup.find("div", class_="b-product-control__row").find("span").text.strip().split("\xa0")[0]
         articles = soup.find("div", class_="b-description__container-col").find_all("td")
         i = 0
+        sa = ''
         for article in articles:
             i = i+1
             if article.text == 'Артикул':
                 sa = articles[i].text
                 break
-            else:
-                sa = ''
-
         return name, price, sa
+
 
 class ParserVdom(Parser):
 
@@ -199,29 +199,23 @@ class Parser21Vek(Parser):
 
 
 def main():
-    pOz = ParserOz()
+    oz = ParserOz()
     vdom = ParserVdom()
     my_list = []
 
-    #print(pOz.get_final_page())
-
-
-    my_list = []
-
-    fp = pOz.get_final_page()  # define pages
+    fp = oz.get_final_page()  # define pages
     for page in range(0, fp):
         url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
         print(url_count)
-        links = pOz.get_links(pOz.get_page(url_count))
+        links = oz.get_links(oz.get_page(url_count))
         for i in links:
-            parse_product_temp = pOz.parse_product(i)
+            parse_product_temp = oz.parse_product(i)
             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
 
                 short = [(parse_product_temp[2], parse_product_temp[0],
-                        parse_product_temp[1], vdom.price_vdom(pOz.parse_product(i)[2]))]
-                print (short)
+                          parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
+                print(short)
                 my_list.append(short)
-
 
     # p21 = Parser21Vek()
     # vdom = ParserVdom()
