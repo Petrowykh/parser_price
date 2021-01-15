@@ -4,6 +4,10 @@
 import bs4
 import requests
 import csv
+import logging
+
+
+logging.basicConfig(filename="parse.log", level=logging.INFO)
 
 
 list_url_temp = {
@@ -47,7 +51,7 @@ list_url = {
     'https://www.21vek.by/towels/all/belbohemia/',
     'https://www.21vek.by/washing_tools/all/belbohemia/',
     'https://www.21vek.by/makeup_storage/all/belbohemia/',
-    #'https://www.21vek.by/vacuum_packing/all/belbohemia/',
+    # 'https://www.21vek.by/vacuum_packing/all/belbohemia/',
     'https://www.21vek.by/clothes_hangers/all/belbohemia/',
     'https://www.21vek.by/face_apps/all/belbohemia/',
     'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
@@ -81,28 +85,28 @@ class ParserVdom:
         self.session.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)\
             AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
 
-
     def get_page(self, page_url):
         # text of page
         r = self.session.get(page_url)
         r.encoding = 'utf-8'
-
         return r.text
 
-    def price_vdom (self, article):
+    def price_vdom(self, article):
         vdom_text = url_vdom_search+article
         soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
         try:
-            r = soup.find("p", class_ = "price").find("span").text
+            r = soup.find("p", class_="price").find("span").text
             if article == soup.find("table", class_="shop_attributes").find("td").text:
                 price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
             else:
                 price_vdom = ''
-        except:
+        except Exception as E:
+            logging.exception(E)
             price_vdom = ''
         return price_vdom
 
-class Parser_21:
+
+class Parser21Vek:
     def __init__(self):
         # init parser
         self.session = requests.Session()
@@ -111,26 +115,26 @@ class Parser_21:
 
     def get_page(self, page_url):
         # text of page
-        r = self.session.get(page_url)
-        r.encoding = 'utf-8'
-        print (r.status_code)
-        return r.text
+        try:
+            r = self.session.get(page_url)
+            r.encoding = 'utf-8'
+            html_page = r.text
+        except Exception as E:
+            html_page = ""
+            logging.exception(E)
+        return html_page
 
-    def get_final_page (self, page_url):
+    def get_final_page(self, page_url):
         # definition number of final page
         soup = bs4.BeautifulSoup(self.get_page(page_url), 'lxml')
         try:
-            final_page_soup = soup.find("div", class_ ="cr-paginator_page_list").text
+            final_page_soup = soup.find("div", class_="cr-paginator_page_list").text
             final_page_str = final_page_soup.strip().split(' ')[-1]
             final_page = round(int(final_page_str)/60+0.5)
-            #print (final_page)
-
         except Exception as E:
-            print ('Страниц нет')
+            logging.exception('Страниц нет', E)
             final_page = 0
-
         return final_page
-
 
     def get_blocks(self, html):
         # blocks with products
@@ -138,47 +142,43 @@ class Parser_21:
         container = soup.select('li.result__item')
         return container
 
-    def get_article (self, name):
+    def get_article(self, name):
         # article for vdom.by
-        #TODO функция на справляется со строкой "в ассортимеенте", исправть
-        str = name.split(' ')
-        #print (str)
+        str_article = name.split(' ')
         result = ''
-        for i in str:
+        for i in str_article:
             if len(i) == 5 and i.isnumeric():
                 result = i
-
         return result
-
 
     def parse_block(self, item):
         # definition name and price 21vek.by
         try:
             # имени может не быть
-            name_product = item.find("span", class_ = 'result__name')
+            name_product = item.find("span", class_="result__name")
         except Exception as E:
-            print (E)
+            logging.exception(E)
             name_product = ''
         try:
-            #цены может не быть
-            price_product = item.find('span', class_ = "g-price__unit result__priceunit").find_previous("span").text
-
-            #price = price_product.find("span")
-        except:
+            # цены может не быть
+            price_product = item.find('span', class_="g-price__unit result__priceunit").find_previous("span").text
+        except Exception as E:
+            logging.exception(E)
             price_product = ''
         return name_product.text, price_product, self.get_article(name_product.text)
 
+
 def main():
-    p21 = Parser_21()
+    p21 = Parser21Vek()
     vdom = ParserVdom()
 
     my_list = []
 
     for url in list_url:
-        fp = p21.get_final_page(url) # define pages
+        fp = p21.get_final_page(url)  # define pages
         for page in range(0, fp):
-            url_count = url + 'page:' + str(page+1) # format url
-            print (url_count)
+            url_count = url + 'page:' + str(page+1)  # format url
+            print(url_count)
             cont = p21.get_blocks(p21.get_page(url_count))
             for i in cont:
                 if p21.parse_block(i)[1] != '':
@@ -187,11 +187,10 @@ def main():
                     my_list.append(short)
     return my_list
 
+
 if __name__ == '__main__':
-    list = main()
+    list_csv = main()
     with open('out.csv', "w", newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
-        for line in list:
+        for line in list_csv:
             writer.writerow(line[0])
-
-
