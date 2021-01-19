@@ -152,6 +152,22 @@ class ParserVdom(Parser):
 
 class Parser21Vek(Parser):
 
+    def get_links (self):
+        list_urls_21vek = []
+        soup = bs4.BeautifulSoup(self.get_page('https://www.21vek.by/info/brands/belbohemia.html'), 'lxml')
+        try:
+            links = soup.find_all("li", class_="brand-subcategories__item")
+            for url in links:
+                list_url_21vek = url.find("a", class_='brand-subcategories__link').get("href")
+                print (list_url_21vek)
+                list_urls_21vek.append(list_url_21vek)
+            links = list_urls_21vek
+        except Exception as E:
+            logging.exception('Страниц нет', E)
+            links = []
+        return links
+
+
     def get_final_page(self, page_url):
         # definition number of final page
         soup = bs4.BeautifulSoup(self.get_page(page_url), 'lxml')
@@ -219,6 +235,7 @@ def main():
     #             if short[0][3] != '':
     #                 print(page, short)
     #             my_list.append(short)
+    my_list = p21.get_links()
 
     for url in list_url_21vek:
         fp = p21.get_final_page(url)  # define pages
