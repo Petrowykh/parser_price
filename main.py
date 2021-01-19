@@ -18,65 +18,69 @@ url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search in vdom.
 
 url_oz_main = 'https://oz.by/producer/more120300.html'
 
-list_url_21vek = {
-    'https://www.21vek.by/ny_decorations/all/belbohemia/',
-    'https://www.21vek.by/led_decorations/all/belbohemia/',
-    'https://www.21vek.by/christmas_led_figures/all/belbohemia/',
-    'https://www.21vek.by/christmas_trees/all/belbohemia/',
-    'https://www.21vek.by/party_goods/all/belbohemia/',
-    'https://www.21vek.by/food_containers/all/belbohemia/',
-    'https://www.21vek.by/spice_organizers/all/belbohemia/',
-    'https://www.21vek.by/kitchen_organizers/all/belbohemia/',
-    'https://www.21vek.by/drinkware/all/belbohemia/',
-    'https://www.21vek.by/dishes/all/belbohemia/',
-    'https://www.21vek.by/tableware/all/belbohemia/',
-    'https://www.21vek.by/cutlery/all/belbohemia/',
-    'https://www.21vek.by/bar_accessories/all/belbohemia/',
-    'https://www.21vek.by/candles_candleholders/all/belbohemia/',
-    'https://www.21vek.by/statuettes/all/belbohemia/',
-    'https://www.21vek.by/flowerpots/all/belbohemia/',
-    'https://www.21vek.by/vases/all/belbohemia/',
-    'https://www.21vek.by/jewelry_boxes/all/belbohemia/',
-    'https://www.21vek.by/artificial_flowers_plants/all/belbohemia/',
-    'https://www.21vek.by/furnishings/all/belbohemia/',
-    'https://www.21vek.by/interior_watches/all/belbohemia/',
-    'https://www.21vek.by/thermoses/all/belbohemia/',  
-    'https://www.21vek.by/bags_refrigerators/all/belbohemia/',
-    'https://www.21vek.by/cezves/all/belbohemia/',
-    'https://www.21vek.by/coffee_teapots/all/belbohemia/',
-    'https://www.21vek.by/bathroom_furniture/all/belbohemia/',
-    'https://www.21vek.by/bathroom_apps/all/belbohemia/',
-    'https://www.21vek.by/storage_organizers/all/belbohemia/',
-    'https://www.21vek.by/bins/all/belbohemia/',
-    'https://www.21vek.by/cleaning_implements/all/belbohemia/',
-    'https://www.21vek.by/drying_racks/all/belbohemia/',
-    'https://www.21vek.by/towels/all/belbohemia/',
-    'https://www.21vek.by/washing_tools/all/belbohemia/',
-    'https://www.21vek.by/makeup_storage/all/belbohemia/',
-    # 'https://www.21vek.by/vacuum_packing/all/belbohemia/',
-    'https://www.21vek.by/clothes_hangers/all/belbohemia/',
-    'https://www.21vek.by/face_apps/all/belbohemia/',
-    'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
-    'https://www.21vek.by/toilet_accessories/all/belbohemia/',
-    'https://www.21vek.by/bathroom_sets/all/belbohemia/',
-    'https://www.21vek.by/aprons_potholders/all/belbohemia/',
-    'https://www.21vek.by/watering/all/belbohemia/',
-    'https://www.21vek.by/gift_sets/all/belbohemia/',
-    'https://www.21vek.by/cutting_boards/all/belbohemia/',
-    'https://www.21vek.by/kitchen_apps/all/belbohemia/',
-    'https://www.21vek.by/bowls_feeders/all/belbohemia/',
-    'https://www.21vek.by/animal_furniture/all/belbohemia/',
-    'https://www.21vek.by/cat_scratchers/all/belbohemia/',
-    'https://www.21vek.by/aerobics_yoga/all/belbohemia/',
-    'https://www.21vek.by/sport_expanders/all/belbohemia/',
-    'https://www.21vek.by/weights/all/belbohemia/',
-    'https://www.21vek.by/hair_accessories/all/belbohemia/',
-    'https://www.21vek.by/hair_colors/all/belbohemia/',
-    'https://www.21vek.by/massagers/all/belbohemia/',
-    'https://www.21vek.by/sports_bottles/all/belbohemia/',
-    'https://www.21vek.by/frying_pans/all/belbohemia/',
-    'https://www.21vek.by/parasols/all/belbohemia/'
-}
+# list_url_21vek = {
+#
+#     'https://www.21vek.by/vacuum_packing/all/belbohemia/',
+#     'https://www.21vek.by/clothes_hangers/all/belbohemia/',
+#
+#     # 'https://www.21vek.by/ny_decorations/all/belbohemia/',
+#     # 'https://www.21vek.by/led_decorations/all/belbohemia/',
+#     # 'https://www.21vek.by/christmas_led_figures/all/belbohemia/',
+#     # 'https://www.21vek.by/christmas_trees/all/belbohemia/',
+#     # 'https://www.21vek.by/party_goods/all/belbohemia/',
+#     # 'https://www.21vek.by/food_containers/all/belbohemia/',
+#     # 'https://www.21vek.by/spice_organizers/all/belbohemia/',
+#     # 'https://www.21vek.by/kitchen_organizers/all/belbohemia/',
+#     # 'https://www.21vek.by/drinkware/all/belbohemia/',
+#     # 'https://www.21vek.by/dishes/all/belbohemia/',
+#     # 'https://www.21vek.by/tableware/all/belbohemia/',
+#     # 'https://www.21vek.by/cutlery/all/belbohemia/',
+#     # 'https://www.21vek.by/bar_accessories/all/belbohemia/',
+#     # 'https://www.21vek.by/candles_candleholders/all/belbohemia/',
+#     # 'https://www.21vek.by/statuettes/all/belbohemia/',
+#     # 'https://www.21vek.by/flowerpots/all/belbohemia/',
+#     # 'https://www.21vek.by/vases/all/belbohemia/',
+#     # 'https://www.21vek.by/jewelry_boxes/all/belbohemia/',
+#     # 'https://www.21vek.by/artificial_flowers_plants/all/belbohemia/',
+#     # 'https://www.21vek.by/furnishings/all/belbohemia/',
+#     # 'https://www.21vek.by/interior_watches/all/belbohemia/',
+#     # 'https://www.21vek.by/thermoses/all/belbohemia/',
+#     # 'https://www.21vek.by/bags_refrigerators/all/belbohemia/',
+#     # 'https://www.21vek.by/cezves/all/belbohemia/',
+#     # 'https://www.21vek.by/coffee_teapots/all/belbohemia/',
+#     # 'https://www.21vek.by/bathroom_furniture/all/belbohemia/',
+#     # 'https://www.21vek.by/bathroom_apps/all/belbohemia/',
+#     # 'https://www.21vek.by/storage_organizers/all/belbohemia/',
+#     # 'https://www.21vek.by/bins/all/belbohemia/',
+#     # 'https://www.21vek.by/cleaning_implements/all/belbohemia/',
+#     # 'https://www.21vek.by/drying_racks/all/belbohemia/',
+#     # 'https://www.21vek.by/towels/all/belbohemia/',
+#     # 'https://www.21vek.by/washing_tools/all/belbohemia/',
+#     # 'https://www.21vek.by/makeup_storage/all/belbohemia/',
+#     # # 'https://www.21vek.by/vacuum_packing/all/belbohemia/',
+#     # 'https://www.21vek.by/clothes_hangers/all/belbohemia/',
+#     # 'https://www.21vek.by/face_apps/all/belbohemia/',
+#     # 'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
+#     # 'https://www.21vek.by/toilet_accessories/all/belbohemia/',
+#     # 'https://www.21vek.by/bathroom_sets/all/belbohemia/',
+#     # 'https://www.21vek.by/aprons_potholders/all/belbohemia/',
+#     # 'https://www.21vek.by/watering/all/belbohemia/',
+#     # 'https://www.21vek.by/gift_sets/all/belbohemia/',
+#     # 'https://www.21vek.by/cutting_boards/all/belbohemia/',
+#     # 'https://www.21vek.by/kitchen_apps/all/belbohemia/',
+#     # 'https://www.21vek.by/bowls_feeders/all/belbohemia/',
+#     # 'https://www.21vek.by/animal_furniture/all/belbohemia/',
+#     # 'https://www.21vek.by/cat_scratchers/all/belbohemia/',
+#     # 'https://www.21vek.by/aerobics_yoga/all/belbohemia/',
+#     # 'https://www.21vek.by/sport_expanders/all/belbohemia/',
+#     # 'https://www.21vek.by/weights/all/belbohemia/',
+#     # 'https://www.21vek.by/hair_accessories/all/belbohemia/',
+#     # 'https://www.21vek.by/hair_colors/all/belbohemia/',
+#     # 'https://www.21vek.by/massagers/all/belbohemia/',
+#     # 'https://www.21vek.by/sports_bottles/all/belbohemia/',
+#     # 'https://www.21vek.by/frying_pans/all/belbohemia/',
+#     # 'https://www.21vek.by/parasols/all/belbohemia/'
+# }
 
 
 class Parser:
@@ -145,21 +149,21 @@ class ParserVdom(Parser):
             else:
                 price_vdom = ''
         except Exception as E:
-            # logging.exception(E)
+            logging.exception(E)
             price_vdom = ''
         return price_vdom
 
 
 class Parser21Vek(Parser):
 
-    def get_links (self):
+    def get_links(self):
         list_urls_21vek = []
         soup = bs4.BeautifulSoup(self.get_page('https://www.21vek.by/info/brands/belbohemia.html'), 'lxml')
         try:
-            links = soup.find_all("li", class_="brand-subcategories__item")
+            links = soup.find("ul", class_="b-categories-full brand-categories__list")\
+                        .find_all("li", class_="brand-subcategories__item")
             for url in links:
                 list_url_21vek = url.find("a", class_='brand-subcategories__link').get("href")
-                print (list_url_21vek)
                 list_urls_21vek.append(list_url_21vek)
             links = list_urls_21vek
         except Exception as E:
@@ -167,17 +171,17 @@ class Parser21Vek(Parser):
             links = []
         return links
 
-
     def get_final_page(self, page_url):
         # definition number of final page
         soup = bs4.BeautifulSoup(self.get_page(page_url), 'lxml')
         try:
-            final_page_soup = soup.find("div", class_="cr-paginator_page_list").text
-            final_page_str = final_page_soup.strip().split(' ')[-1]
-            final_page = round(int(final_page_str)/60+0.5)
-        except Exception as E:
-            logging.exception('Страниц нет', E)
-            final_page = 0
+            final_page_soup = soup.find("span", class_="cr-curent cr-paging_link").text
+            final_page = int(final_page_soup.strip())
+
+            # final_page = final_page_soup.strip().split(' ')[-1]
+            # final_page = round(int(final_page_str)/60+0.5)
+        except:
+            final_page = 1
         return final_page
 
     @staticmethod
@@ -201,7 +205,7 @@ class Parser21Vek(Parser):
         # definition name and price 21vek.by
         try:
             # name is found
-            name_product = item.find("span", class_="result__name")
+            name_product = item.find("span", class_="result__name").text
         except Exception as E:
             logging.exception(E)
             name_product = ''
@@ -211,7 +215,13 @@ class Parser21Vek(Parser):
         except Exception as E:
             logging.exception(E)
             price_product = ''
-        return name_product.text, price_product, self.get_article(name_product.text)
+
+        try:
+            article_product = self.get_article(name_product)
+        except:
+            article_product = ''
+
+        return name_product, price_product, article_product
 
 
 def main():
@@ -235,7 +245,8 @@ def main():
     #             if short[0][3] != '':
     #                 print(page, short)
     #             my_list.append(short)
-    my_list = p21.get_links()
+
+    list_url_21vek = p21.get_links()
 
     for url in list_url_21vek:
         fp = p21.get_final_page(url)  # define pages
