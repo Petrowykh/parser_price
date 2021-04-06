@@ -5,6 +5,9 @@ import bs4
 import requests
 import csv
 import logging
+import urllib3
+
+urllib3.disable_warnings()
 
 
 logging.basicConfig(filename="parse.log", level=logging.INFO, filemode="w")
@@ -18,86 +21,25 @@ url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search in vdom.
 
 url_oz_main = 'https://oz.by/producer/more120300.html'
 
-# list_url_21vek = {
-#
-#     'https://www.21vek.by/vacuum_packing/all/belbohemia/',
-#     'https://www.21vek.by/clothes_hangers/all/belbohemia/',
-#
-#     # 'https://www.21vek.by/ny_decorations/all/belbohemia/',
-#     # 'https://www.21vek.by/led_decorations/all/belbohemia/',
-#     # 'https://www.21vek.by/christmas_led_figures/all/belbohemia/',
-#     # 'https://www.21vek.by/christmas_trees/all/belbohemia/',
-#     # 'https://www.21vek.by/party_goods/all/belbohemia/',
-#     # 'https://www.21vek.by/food_containers/all/belbohemia/',
-#     # 'https://www.21vek.by/spice_organizers/all/belbohemia/',
-#     # 'https://www.21vek.by/kitchen_organizers/all/belbohemia/',
-#     # 'https://www.21vek.by/drinkware/all/belbohemia/',
-#     # 'https://www.21vek.by/dishes/all/belbohemia/',
-#     # 'https://www.21vek.by/tableware/all/belbohemia/',
-#     # 'https://www.21vek.by/cutlery/all/belbohemia/',
-#     # 'https://www.21vek.by/bar_accessories/all/belbohemia/',
-#     # 'https://www.21vek.by/candles_candleholders/all/belbohemia/',
-#     # 'https://www.21vek.by/statuettes/all/belbohemia/',
-#     # 'https://www.21vek.by/flowerpots/all/belbohemia/',
-#     # 'https://www.21vek.by/vases/all/belbohemia/',
-#     # 'https://www.21vek.by/jewelry_boxes/all/belbohemia/',
-#     # 'https://www.21vek.by/artificial_flowers_plants/all/belbohemia/',
-#     # 'https://www.21vek.by/furnishings/all/belbohemia/',
-#     # 'https://www.21vek.by/interior_watches/all/belbohemia/',
-#     # 'https://www.21vek.by/thermoses/all/belbohemia/',
-#     # 'https://www.21vek.by/bags_refrigerators/all/belbohemia/',
-#     # 'https://www.21vek.by/cezves/all/belbohemia/',
-#     # 'https://www.21vek.by/coffee_teapots/all/belbohemia/',
-#     # 'https://www.21vek.by/bathroom_furniture/all/belbohemia/',
-#     # 'https://www.21vek.by/bathroom_apps/all/belbohemia/',
-#     # 'https://www.21vek.by/storage_organizers/all/belbohemia/',
-#     # 'https://www.21vek.by/bins/all/belbohemia/',
-#     # 'https://www.21vek.by/cleaning_implements/all/belbohemia/',
-#     # 'https://www.21vek.by/drying_racks/all/belbohemia/',
-#     # 'https://www.21vek.by/towels/all/belbohemia/',
-#     # 'https://www.21vek.by/washing_tools/all/belbohemia/',
-#     # 'https://www.21vek.by/makeup_storage/all/belbohemia/',
-#     # # 'https://www.21vek.by/vacuum_packing/all/belbohemia/',
-#     # 'https://www.21vek.by/clothes_hangers/all/belbohemia/',
-#     # 'https://www.21vek.by/face_apps/all/belbohemia/',
-#     # 'https://www.21vek.by/bathtub_enclosures/all/belbohemia/',
-#     # 'https://www.21vek.by/toilet_accessories/all/belbohemia/',
-#     # 'https://www.21vek.by/bathroom_sets/all/belbohemia/',
-#     # 'https://www.21vek.by/aprons_potholders/all/belbohemia/',
-#     # 'https://www.21vek.by/watering/all/belbohemia/',
-#     # 'https://www.21vek.by/gift_sets/all/belbohemia/',
-#     # 'https://www.21vek.by/cutting_boards/all/belbohemia/',
-#     # 'https://www.21vek.by/kitchen_apps/all/belbohemia/',
-#     # 'https://www.21vek.by/bowls_feeders/all/belbohemia/',
-#     # 'https://www.21vek.by/animal_furniture/all/belbohemia/',
-#     # 'https://www.21vek.by/cat_scratchers/all/belbohemia/',
-#     # 'https://www.21vek.by/aerobics_yoga/all/belbohemia/',
-#     # 'https://www.21vek.by/sport_expanders/all/belbohemia/',
-#     # 'https://www.21vek.by/weights/all/belbohemia/',
-#     # 'https://www.21vek.by/hair_accessories/all/belbohemia/',
-#     # 'https://www.21vek.by/hair_colors/all/belbohemia/',
-#     # 'https://www.21vek.by/massagers/all/belbohemia/',
-#     # 'https://www.21vek.by/sports_bottles/all/belbohemia/',
-#     # 'https://www.21vek.by/frying_pans/all/belbohemia/',
-#     # 'https://www.21vek.by/parasols/all/belbohemia/'
-# }
-
+url_oki = "https://oki.by/search?q=%D0%B1%D0%B5%D0%BB%D0%B1%D0%BE%D0%B3%D0%B5%D0%BC%D0%B8%D1%8F"
 
 class Parser:
 
     def __init__(self):
         # init parser
         self.session = requests.Session()
-        self.session.headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1)\
-            AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        self.session.headers = {'Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) \
+         Chrome/5.0.307.11 Safari/532.9'}
+
+
 
     def get_page(self, page_url):
         # text of page
-        # print('GET')
         try:
-            r = self.session.get(page_url)
+            r = self.session.get(page_url, verify=False)
             r.encoding = 'utf-8'
             html_page = r.text
+
         except Exception as E:
             html_page = ""
             logging.exception(E)
@@ -144,6 +86,7 @@ class ParserVdom(Parser):
         soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
         try:
             r = soup.find("p", class_="price").find("span").text
+
             if article == soup.find("table", class_="shop_attributes").find("td").text:
                 price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
             else:
@@ -152,6 +95,33 @@ class ParserVdom(Parser):
             logging.exception(E)
             price_vdom = ''
         return price_vdom
+
+class ParserOki(Parser):
+
+    def get_final_page(self):
+        soup = bs4.BeautifulSoup(self.get_page(url_oki), 'lxml')
+        r = soup.find("ul", class_="pagination").find_all("li")
+        r = r[-1].find("a").get("href").split("=")[-1]
+        return int(r)
+
+    @staticmethod
+    def get_links(html):
+        links = []
+        soup = bs4.BeautifulSoup(html, 'lxml')
+        container = soup.find_all("div", class_="col-sm-6 col-md-4 item")
+        for cont in container:
+            links.append(cont.find("div", class_='prod-img').find("a").get("href"))
+        return links
+
+    def parse_product(self, link):
+        cod_link = self.get_page("https://oki.by" + link)
+        soup = bs4.BeautifulSoup(cod_link, 'lxml')
+        name = soup.find("div", class_="col-md-12 title-name").find("h1").find("span").text
+        price = soup.find("div", class_="price").find("p").text.strip().split(" ")[0]
+        articles = soup.find("table", class_="table table-condensed").find_all("td")
+        sa = articles[1].text
+
+        return name, price.replace(".", ","), sa
 
 
 class Parser21Vek(Parser):
@@ -177,11 +147,9 @@ class Parser21Vek(Parser):
         try:
             final_page_soup = soup.find("span", class_="cr-curent cr-paging_link").text
             final_page = int(final_page_soup.strip())
-
-            # final_page = final_page_soup.strip().split(' ')[-1]
-            # final_page = round(int(final_page_str)/60+0.5)
-        except:
-            final_page = 1
+        except Exception as E:
+            logging.exception(E)
+            return 1
         return final_page
 
     @staticmethod
@@ -215,57 +183,76 @@ class Parser21Vek(Parser):
         except Exception as E:
             logging.exception(E)
             price_product = ''
-
         try:
             article_product = self.get_article(name_product)
-        except:
+        except Exception as E:
+            logging.exception(E)
             article_product = ''
-
         return name_product, price_product, article_product
 
 
 def main():
-    oz = ParserOz()
     vdom = ParserVdom()
-    p21 = Parser21Vek()
     my_list = []
 
-    # fp = oz.get_final_page()  # define pages
-    # for page in range(0, fp):
-    #     url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
-    #     print(url_count)
-    #     links = oz.get_links(oz.get_page(url_count))
-    #
-    #     for i in links:
-    #         parse_product_temp = oz.parse_product(i)
-    #         if parse_product_temp[1] != '' and parse_product_temp[2] != '':
-    #
-    #             short = [(parse_product_temp[2], parse_product_temp[0],
-    #                       parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-    #             if short[0][3] != '':
-    #                 print(page, short)
-    #             my_list.append(short)
+    # parsing_type = input("Enter-21 век, 2-oz.by")
+    print("Парсим")
+    oki = ParserOki()
+    fp = oki.get_final_page()  # define pages
+    for page in range(0, fp):
+        url_count = url_oki + '&sort=1&page=' + str(page+1)  # format url
+        links = oki.get_links(oki.get_page(url_count))
 
-    list_url_21vek = p21.get_links()
+        for i in links:
+            parse_product_temp = oki.parse_product(i)
+            if parse_product_temp[1] != '' and parse_product_temp[2] != '':
+                short = [(parse_product_temp[2], parse_product_temp[0],
+                parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
+                if short[0][3] != '':
+                    print(page, short)
+                my_list.append(short)
 
-    for url in list_url_21vek:
-        fp = p21.get_final_page(url)  # define pages
-        for page in range(0, fp):
-            url_count = url + 'page:' + str(page+1)  # format url
-            print(url_count)
-            cont = p21.get_blocks(p21.get_page(url_count))
-            for i in cont:
-                if p21.parse_block(i)[1] != '':
-                    parse_block_temp = p21.parse_block(i)
-                    short = [(parse_block_temp[2], parse_block_temp[0],
-                             parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                    if short[0][3] != '':
-                        print(page, short)
-                    my_list.append(short)
+    # if parsing_type == '':
+    #     print("21 век")
+    #     p21 = Parser21Vek()
+    #     list_url_21vek = p21.get_links()
+    #     for url in list_url_21vek:
+    #         fp = p21.get_final_page(url)  # define pages
+    #         for page in range(0, fp):
+    #             url_count = url + 'page:' + str(page + 1)  # format url
+    #             print(url_count)
+    #             cont = p21.get_blocks(p21.get_page(url_count))
+    #             for i in cont:
+    #                 if p21.parse_block(i)[1] != '':
+    #                     parse_block_temp = p21.parse_block(i)
+    #                     short = [(parse_block_temp[2], parse_block_temp[0],
+    #                               parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+    #                     if short[0][3] != '':
+    #                         print(page, short)
+    #                     my_list.append(short)
+    # else:
+    #     print("oz.by")
+    #     oz = ParserOz()
+    #     fp = oz.get_final_page()  # define pages
+    #     for page in range(0, fp):
+    #         url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
+    #         print(url_count)
+    #         links = oz.get_links(oz.get_page(url_count))
+    #
+    #         for i in links:
+    #             parse_product_temp = oz.parse_product(i)
+    #             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
+    #                 short = [(parse_product_temp[2], parse_product_temp[0],
+    #                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
+    #                 if short[0][3] != '':
+    #                     print(page, short)
+    #                 my_list.append(short)
+
     return my_list
 
 
 if __name__ == '__main__':
+
     list_csv = main()
     with open('out.csv', "w", newline='') as csv_file:
         writer = csv.writer(csv_file, delimiter=';')
