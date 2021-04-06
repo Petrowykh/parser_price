@@ -9,9 +9,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-
 logging.basicConfig(filename="parse.log", level=logging.INFO, filemode="w")
-
 
 list_url_temp = {  # for testing
     'https://www.21vek.by/ny_decorations/all/belbohemia/',
@@ -23,6 +21,9 @@ url_oz_main = 'https://oz.by/producer/more120300.html'
 
 url_oki = "https://oki.by/search?q=%D0%B1%D0%B5%D0%BB%D0%B1%D0%BE%D0%B3%D0%B5%D0%BC%D0%B8%D1%8F"
 
+my_list = []
+
+
 class Parser:
 
     def __init__(self):
@@ -30,8 +31,6 @@ class Parser:
         self.session = requests.Session()
         self.session.headers = {'Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/532.9 (KHTML, like Gecko) \
          Chrome/5.0.307.11 Safari/532.9'}
-
-
 
     def get_page(self, page_url):
         # text of page
@@ -95,6 +94,7 @@ class ParserVdom(Parser):
             logging.exception(E)
             price_vdom = ''
         return price_vdom
+
 
 class ParserOki(Parser):
 
@@ -191,70 +191,90 @@ class Parser21Vek(Parser):
         return name_product, price_product, article_product
 
 
-def main():
+def parse_oki():
     vdom = ParserVdom()
-    my_list = []
-
-    # parsing_type = input("Enter-21 век, 2-oz.by")
-    print("Парсим")
+    print("Парсим Oki.by")
     oki = ParserOki()
     fp = oki.get_final_page()  # define pages
     for page in range(0, fp):
-        url_count = url_oki + '&sort=1&page=' + str(page+1)  # format url
+        url_count = url_oki + '&sort=1&page=' + str(page + 1)  # format url
         links = oki.get_links(oki.get_page(url_count))
-
         for i in links:
             parse_product_temp = oki.parse_product(i)
             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
                 short = [(parse_product_temp[2], parse_product_temp[0],
-                parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
+                          parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
                 if short[0][3] != '':
                     print(page, short)
                 my_list.append(short)
-
-    # if parsing_type == '':
-    #     print("21 век")
-    #     p21 = Parser21Vek()
-    #     list_url_21vek = p21.get_links()
-    #     for url in list_url_21vek:
-    #         fp = p21.get_final_page(url)  # define pages
-    #         for page in range(0, fp):
-    #             url_count = url + 'page:' + str(page + 1)  # format url
-    #             print(url_count)
-    #             cont = p21.get_blocks(p21.get_page(url_count))
-    #             for i in cont:
-    #                 if p21.parse_block(i)[1] != '':
-    #                     parse_block_temp = p21.parse_block(i)
-    #                     short = [(parse_block_temp[2], parse_block_temp[0],
-    #                               parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-    #                     if short[0][3] != '':
-    #                         print(page, short)
-    #                     my_list.append(short)
-    # else:
-    #     print("oz.by")
-    #     oz = ParserOz()
-    #     fp = oz.get_final_page()  # define pages
-    #     for page in range(0, fp):
-    #         url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
-    #         print(url_count)
-    #         links = oz.get_links(oz.get_page(url_count))
-    #
-    #         for i in links:
-    #             parse_product_temp = oz.parse_product(i)
-    #             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
-    #                 short = [(parse_product_temp[2], parse_product_temp[0],
-    #                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-    #                 if short[0][3] != '':
-    #                     print(page, short)
-    #                 my_list.append(short)
-
     return my_list
+
+
+def parse_21vek():
+    vdom = ParserVdom()
+    print("Парсим 21 век")
+    p21 = Parser21Vek()
+    list_url_21vek = p21.get_links()
+    for url in list_url_21vek:
+        fp = p21.get_final_page(url)  # define pages
+        for page in range(0, fp):
+            url_count = url + 'page:' + str(page + 1)  # format url
+            cont = p21.get_blocks(p21.get_page(url_count))
+            for i in cont:
+                if p21.parse_block(i)[1] != '':
+                    parse_block_temp = p21.parse_block(i)
+                    short = [(parse_block_temp[2], parse_block_temp[0],
+                              parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
+                    if short[0][3] != '':
+                        print(page, short)
+                    my_list.append(short)
+    return my_list
+
+
+def parse_oz():
+    vdom = ParserVdom()
+    print("Парсим oz.by")
+    oz = ParserOz()
+    fp = oz.get_final_page()  # define pages
+    for page in range(0, fp):
+        url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
+        links = oz.get_links(oz.get_page(url_count))
+        for i in links:
+            parse_product_temp = oz.parse_product(i)
+            if parse_product_temp[1] != '' and parse_product_temp[2] != '':
+                short = [(parse_product_temp[2], parse_product_temp[0],
+                          parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
+                if short[0][3] != '':
+                    print(page, short)
+                my_list.append(short)
+    return my_list
+
+
+def main():
+    name = ''
+    print("1 - 21 Век, 2 - Oki.by, 3 - oz.by")
+    parsing_type = input()
+    if parsing_type == '1':
+        parse_21vek()
+        name = '21vek.csv'
+    elif parsing_type == '2':
+        parse_oki()
+        name = "oki.csv"
+    elif parsing_type == '3':
+        parse_oz()
+        name = "oz.csv"
+    else:
+        print("Выходим")
+    return my_list, name
 
 
 if __name__ == '__main__':
 
-    list_csv = main()
-    with open('out.csv', "w", newline='') as csv_file:
-        writer = csv.writer(csv_file, delimiter=';')
-        for line in list_csv:
-            writer.writerow(line[0])
+    list_csv, name_file = main()
+    if list_csv:
+        with open(name_file, "w", newline='') as csv_file:
+            writer = csv.writer(csv_file, delimiter=';')
+            for line in list_csv:
+                writer.writerow(line[0])
+    else:
+        print("Thanks")
