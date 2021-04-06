@@ -6,14 +6,13 @@ import requests
 import csv
 import logging
 import urllib3
+from progress.bar import IncrementalBar
 
 urllib3.disable_warnings()
 
 logging.basicConfig(filename="parse.log", level=logging.INFO, filemode="w")
 
-list_url_temp = {  # for testing
-    'https://www.21vek.by/ny_decorations/all/belbohemia/',
-}
+url_21vek = 'https://www.21vek.by/info/brands/belbohemia.html'
 
 url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search in vdom.by
 
@@ -38,7 +37,6 @@ class Parser:
             r = self.session.get(page_url, verify=False)
             r.encoding = 'utf-8'
             html_page = r.text
-
         except Exception as E:
             html_page = ""
             logging.exception(E)
@@ -126,9 +124,9 @@ class ParserOki(Parser):
 
 class Parser21Vek(Parser):
 
-    def get_links(self):
+    def get_links(self, html):
         list_urls_21vek = []
-        soup = bs4.BeautifulSoup(self.get_page('https://www.21vek.by/info/brands/belbohemia.html'), 'lxml')
+        soup = bs4.BeautifulSoup(self.get_page(html), 'lxml')
         try:
             links = soup.find("ul", class_="b-categories-full brand-categories__list")\
                         .find_all("li", class_="brand-subcategories__item")
@@ -199,14 +197,17 @@ def parse_oki():
     for page in range(0, fp):
         url_count = url_oki + '&sort=1&page=' + str(page + 1)  # format url
         links = oki.get_links(oki.get_page(url_count))
+        bar = IncrementalBar('  Links#' + str(page), max=len(links))
         for i in links:
+            bar.next()
             parse_product_temp = oki.parse_product(i)
             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
                 short = [(parse_product_temp[2], parse_product_temp[0],
                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-                if short[0][3] != '':
-                    print(page, short)
+                # if short[0][3] != '':
+                #     print(page, short)
                 my_list.append(short)
+        bar.finish()
     return my_list
 
 
@@ -214,20 +215,23 @@ def parse_21vek():
     vdom = ParserVdom()
     print("Парсим 21 век")
     p21 = Parser21Vek()
-    list_url_21vek = p21.get_links()
+    list_url_21vek = p21.get_links(url_21vek)
     for url in list_url_21vek:
         fp = p21.get_final_page(url)  # define pages
         for page in range(0, fp):
             url_count = url + 'page:' + str(page + 1)  # format url
             cont = p21.get_blocks(p21.get_page(url_count))
+            bar = IncrementalBar('Page #' + str(url), max=len(cont))
             for i in cont:
+                bar.next()
                 if p21.parse_block(i)[1] != '':
                     parse_block_temp = p21.parse_block(i)
                     short = [(parse_block_temp[2], parse_block_temp[0],
                               parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                    if short[0][3] != '':
-                        print(page, short)
+                    # if short[0][3] != '':
+                    #     print(page, short)
                     my_list.append(short)
+            bar.finish()
     return my_list
 
 
@@ -239,14 +243,15 @@ def parse_oz():
     for page in range(0, fp):
         url_count = url_oz_main + 'page%3A2=&page=3?page=' + str(page+1)  # format url
         links = oz.get_links(oz.get_page(url_count))
+        bar = IncrementalBar('  Links#' + str(page), max=len(links))
         for i in links:
+            bar.next()
             parse_product_temp = oz.parse_product(i)
             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
                 short = [(parse_product_temp[2], parse_product_temp[0],
                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-                if short[0][3] != '':
-                    print(page, short)
                 my_list.append(short)
+        bar.finish()
     return my_list
 
 
