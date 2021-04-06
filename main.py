@@ -13,11 +13,8 @@ urllib3.disable_warnings()
 logging.basicConfig(filename="parse.log", level=logging.INFO, filemode="w")
 
 url_21vek = 'https://www.21vek.by/info/brands/belbohemia.html'
-
-url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search in vdom.by
-
+url_vdom_search = 'https://vdom.by/?post_type=product&s='  # for search
 url_oz_main = 'https://oz.by/producer/more120300.html'
-
 url_oki = "https://oki.by/search?q=%D0%B1%D0%B5%D0%BB%D0%B1%D0%BE%D0%B3%D0%B5%D0%BC%D0%B8%D1%8F"
 
 my_list = []
@@ -83,7 +80,6 @@ class ParserVdom(Parser):
         soup = bs4.BeautifulSoup(self.get_page(vdom_text), 'lxml')
         try:
             r = soup.find("p", class_="price").find("span").text
-
             if article == soup.find("table", class_="shop_attributes").find("td").text:
                 price_vdom = str(int(r.split('.')[0])+0.01*int(r.split('.')[1][0:2])).replace('.', ',')
             else:
@@ -118,7 +114,6 @@ class ParserOki(Parser):
         price = soup.find("div", class_="price").find("p").text.strip().split(" ")[0]
         articles = soup.find("table", class_="table table-condensed").find_all("td")
         sa = articles[1].text
-
         return name, price.replace(".", ","), sa
 
 
@@ -147,7 +142,7 @@ class Parser21Vek(Parser):
             final_page = int(final_page_soup.strip())
         except Exception as E:
             logging.exception(E)
-            return 1
+            return 1  # page=1
         return final_page
 
     @staticmethod
@@ -204,8 +199,6 @@ def parse_oki():
             if parse_product_temp[1] != '' and parse_product_temp[2] != '':
                 short = [(parse_product_temp[2], parse_product_temp[0],
                           parse_product_temp[1], vdom.price_vdom(parse_product_temp[2]))]
-                # if short[0][3] != '':
-                #     print(page, short)
                 my_list.append(short)
         bar.finish()
     return my_list
@@ -228,8 +221,6 @@ def parse_21vek():
                     parse_block_temp = p21.parse_block(i)
                     short = [(parse_block_temp[2], parse_block_temp[0],
                               parse_block_temp[1], vdom.price_vdom(p21.parse_block(i)[2]))]
-                    # if short[0][3] != '':
-                    #     print(page, short)
                     my_list.append(short)
             bar.finish()
     return my_list
@@ -276,9 +267,11 @@ def main():
 if __name__ == '__main__':
 
     list_csv, name_file = main()
+    first_row = ['Art', 'Name', name_file, 'vdom.by']
     if list_csv:
         with open(name_file, "w", newline='') as csv_file:
             writer = csv.writer(csv_file, delimiter=';')
+            writer.writerow(first_row)
             for line in list_csv:
                 writer.writerow(line[0])
     else:
